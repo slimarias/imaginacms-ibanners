@@ -1,0 +1,22 @@
+{
+    "name": "Ibanners",
+    "alias": "ibanners",
+    "description": "A banner module with categories",
+    "keywords": [],
+    "version": "0.0.1",
+    "active": 1,
+    "order": 1,
+    "providers": [
+        "Modules\\Ibanners\\Providers\\IbannersServiceProvider",
+        "Modules\\Ibanners\\Providers\\RouteServiceProvider"
+    ],
+    "widgets": [
+        "Modules\\Ibanners\\Widgets\\BannersWidget",
+        "Modules\\Ibanners\\Widgets\\CategoriesWidget",
+        "Modules\\Ibanners\\Widgets\\LatestBannersWidget"
+    ],
+    "aliases":{},
+    "files": [
+        "helpers.php"
+    ]
+}
