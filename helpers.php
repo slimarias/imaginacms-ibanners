@@ -1,6 +1,7 @@
 <?php
 
 use Modules\Ibanners\Entities\Category;
+use Modules\Ibanners\Entities\Banner;
 
 if(! function_exists('ibanner')){
 
@@ -8,12 +9,16 @@ if(! function_exists('ibanner')){
 
         //$ibanner = Banner::find($id);
 
-        $ibanner = Category::find($id)->banners;
+        $banners = Banner::with(['categories']);
+        $banners->whereHas('categories', function ($query) use ($id) {
+            $query->whereIn('category_id', [$id]);
+        });
+
 
         $view = View::make($templates)
 
             ->with([
-                'ibanners' => $ibanner,
+                'ibanners' => $banners->get(),
                 'id_cat' => $id,
                 'options' => $options,
             ]);
