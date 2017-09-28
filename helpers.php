@@ -1,6 +1,5 @@
 <?php
 
-use Modules\Ibanners\Entities\Category;
 use Modules\Ibanners\Entities\Banner;
 
 if(! function_exists('ibanner')){
