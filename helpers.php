@@ -1,6 +1,8 @@
 <?php
 
+use Modules\Ibanners\Entities\Category;
 use Modules\Ibanners\Entities\Banner;
+use Modules\Ibanners\Entities\Status;
 
 if(! function_exists('ibanner')){
 
@@ -12,6 +14,7 @@ if(! function_exists('ibanner')){
         $banners->whereHas('categories', function ($query) use ($id) {
             $query->whereIn('category_id', [$id]);
         });
+        $banners->whereStatus(Status::PUBLISHED);
 
 
         $view = View::make($templates)

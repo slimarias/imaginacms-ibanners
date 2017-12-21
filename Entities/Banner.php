@@ -42,10 +42,12 @@ class Banner extends Model
 
         $options = json_decode($value);
         //var_dump($value); die();
-        if(!empty($options->mainimage)) $options->mainimage = $this->saveImage($options->mainimage,"assets/ibanners/banner/".rand().".jpg");
+        if(!empty($options->mainimage)) $options->mainimage = $this->saveImage($options->mainimage,"assets/ibanners/banner/".str_random().".jpg");
+
+
+        saveFileInOptions($options,'mediafile',"assets/ibanners/banner/mediafile/");
 
         $this->attributes['options'] = json_encode(json_encode($options));
-
 
     }
 
@@ -55,11 +57,27 @@ class Banner extends Model
 
     }
 
+    public function saveFileInOptions(&$options,$attribute,$dest_path) {
+
+        if(property_exists($options,$attribute)) {
+            //Simulate a real column so we can use tha function uploadFileToDisk
+            $this->attributes[$attribute] = $this->options->{$attribute};
+            $this->uploadFileToDisk($options->{$attribute}, $attribute, "publicmedia", $dest_path);
+
+            $options->{$attribute} = $this->attributes[$attribute];
+
+            unset($this->attributes[$attribute]);
+
+        } else {
+            $options->{$attribute} = (!empty($this->options->{$attribute}))? $this->options->{$attribute} : '';
+        }
+
+    }
+
 
 
     public function saveImage($value,$destination_path)
     {
-
 
         $disk = "publicmedia";
 
@@ -75,19 +93,6 @@ class Banner extends Model
             $image = \Image::make($value);
             // 2. Store the image on disk.
             \Storage::disk($disk)->put($destination_path, $image->stream());
-
-
-            // Save Thumbs
-
-            \Storage::disk($disk)->put(
-                str_replace('.jpg','_mediumThumb.jpg',$destination_path),
-                $image->fit('400','300')->stream()
-            );
-
-            \Storage::disk($disk)->put(
-                str_replace('.jpg','_smallThumb.jpg',$destination_path),
-                $image->fit('100','80')->stream()
-            );
 
             // 3. Save the path to the database
 

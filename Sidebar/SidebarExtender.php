@@ -34,7 +34,7 @@ class SidebarExtender implements \Maatwebsite\Sidebar\SidebarExtender
         $menu->group(trans('core::sidebar.content'), function (Group $group) {
 
             $group->item(trans('ibanners::common.ibanners'), function (Item $item) {
-                $item->icon('fa fa-copy');
+                $item->icon('fa fa-money');
 
                 $item->item(trans('ibanners::category.list'), function (Item $item) {
                     $item->icon('fa fa-file-text');
@@ -47,7 +47,7 @@ class SidebarExtender implements \Maatwebsite\Sidebar\SidebarExtender
                 });
 
                 $item->item(trans('ibanners::banner.list'), function (Item $item) {
-                    $item->icon('fa fa-copy');
+                    $item->icon('fa fa-money');
                     $item->weight(5);
                     $item->append('crud.ibanners.banner.create');
                     $item->route('crud.ibanners.banner.index');

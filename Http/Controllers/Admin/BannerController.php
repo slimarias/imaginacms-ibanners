@@ -114,6 +114,7 @@ class BannerController extends BcrudController
             ],
             'viewposition' => 'right',
         ]);
+
         $this->crud->addField([ // image
             'label' => trans('ibanners::banner.form.image'),
             'name' => "mainimage",
@@ -126,10 +127,22 @@ class BannerController extends BcrudController
             'viewposition' => 'left',
         ]);
 
+        $this->crud->addField([ // image
+            'label' => __('Media File'),
+            'name' => "mediafile",
+            'type' => 'upload',
+            'upload' => true,
+            'fake' => true,
+            'disk' => 'publicmedia',
+            'store_in' => 'options'
 
-
-    }
-
+        ]);
+        if (config()->has('asgard.ibanner.config.fields')) {
+            $fields = config()->get('asgard.ibanner.config.fields');
+            foreach ($fields as $field) {
+                $this->crud->addField($field);
+            }
+        }}
 
     public function edit($id) {
 
@@ -181,7 +194,12 @@ class BannerController extends BcrudController
 
     public function store(IbannersRequest $request)
     {
-                return parent::storeCrud();
+
+        if ($request['created_at'] == null) {
+            unset($request['created_at']);
+        }
+        return parent::storeCrud();
+
     }
 
 
