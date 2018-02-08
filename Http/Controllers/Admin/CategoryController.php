@@ -111,31 +111,6 @@ class CategoryController extends BcrudController
 
     }
 
-    public function edit($id) {
-
-        parent::edit($id);
-
-        // $this->data['thumbnail']= $this->file->findFileByZoneForEntity('thumbnail', $this->data['entry']);
-
-        return view('ibanners::admin.edit', $this->data);
-
-    }
-
-    public function create() {
-
-        parent::create();
-
-        return view('ibanners::admin.create', $this->data);
-
-    }
-    public function show($id=null) {
-
-        parent::show($id=null);
-
-        return view('ibanners::admin.show', $this->data);
-
-    }
-
     public function setup()
     {
         parent::setup();

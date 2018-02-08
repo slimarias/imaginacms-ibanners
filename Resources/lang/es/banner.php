@@ -18,7 +18,8 @@ return [
 
     'table' => [
         'title' => 'Titulo',
-        'create'=>'Creado'
+        'create'=>'Creado',
+        'category'=> 'Categoria'
     ],
     'form' => [
         'title' => 'Titulo',

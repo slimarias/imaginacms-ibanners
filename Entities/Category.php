@@ -50,8 +50,6 @@ class Category extends Model
             $this->attributes['slug'] = str_slug($value,'-');
         }else{$this->attributes['slug'] = str_slug($this->title,'-');}
 
-
-
     }
 
     /*

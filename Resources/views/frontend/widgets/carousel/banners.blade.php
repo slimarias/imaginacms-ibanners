@@ -33,7 +33,7 @@
         @endpush
 
         </div>
-      @elseif(isset($banner->options->mainimage))
+      @elseif(isset($banner->options->mainimage)&&!empty($banner->options->mainimage))
 
         <div class="ibanner-img">
           <a href="{{$banner->url}}" target="_blank">
@@ -58,11 +58,11 @@
   </div>
 
   <a class="left carousel-control" href="#ibanner-carousel-cat-{{$id_cat}}" role="button" data-slide="prev">
-    <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+    <span class="fa fa-chevron-left" aria-hidden="true"></span>
     <span class="sr-only">Previous</span>
   </a>
   <a class="right carousel-control" href="#ibanner-carousel-cat-{{$id_cat}}" role="button" data-slide="next">
-    <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+    <span class="fa fa-chevron-right" aria-hidden="true"></span>
     <span class="sr-only">Next</span>
   </a>
 

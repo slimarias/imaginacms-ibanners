@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'ibanners' => 'Blog',
+    'ibanners' => 'Banners',
 
 
     /*'title' => [

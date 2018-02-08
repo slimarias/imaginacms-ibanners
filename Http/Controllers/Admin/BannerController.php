@@ -39,6 +39,10 @@ class BannerController extends BcrudController
         $this->crud->setRoute('backend/ibanners/banner');
         $this->crud->setEntityNameStrings('banner', 'banners');
         $this->access = [];
+        $this->crud->enableAjaxTable();
+        $this->crud->orderBy('created_at', 'DESC');
+        $this->crud->limit(100);
+
 
         /*
         |--------------------------------------------------------------------------
@@ -89,6 +93,17 @@ class BannerController extends BcrudController
             'type' => 'textarea',
             'viewposition' => 'left',
         ]);
+        $this->crud->addField([   // DateTime
+        'name' => 'created_at',
+        'label' => trans('iblog::common.date') . ' ' . trans('iblog::common.optional'),
+        'type' => 'datetime_picker',
+        // optional:
+        'datetime_picker_options' => [
+            'format' => 'DD/MM/YYYY HH:mm:ss',
+            'language' => 'es',
+        ],
+        'viewposition' => 'right',
+    ]);
 
         $this->crud->addField([       // Select2Multiple = n-n relationship (with pivot table)
             'label' => trans('ibanners::banner.form.categories'),
@@ -142,33 +157,10 @@ class BannerController extends BcrudController
             foreach ($fields as $field) {
                 $this->crud->addField($field);
             }
-        }}
 
-    public function edit($id) {
-
-        parent::edit($id);
-
-       // $this->data['thumbnail']= $this->file->findFileByZoneForEntity('thumbnail', $this->data['entry']);
-
-        return view('ibanners::admin.edit', $this->data);
+        }
 
     }
-
-    public function create() {
-
-        parent::create();
-
-        return view('ibanners::admin.create', $this->data);
-
-    }
-    public function show($id=null) {
-
-        parent::show($id=null);
-
-        return view('ibanners::admin.show', $this->data);
-
-    }
-
 
 
     public function setup()

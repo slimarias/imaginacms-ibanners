@@ -3,7 +3,7 @@
     "alias": "ibanners",
     "description": "A banner module with categories",
     "keywords": [],
-    "version": "3.0.0",
+    "version": "3.0.2",
     "active": 1,
     "order": 1,
     "providers": [
@@ -12,7 +12,6 @@
     ],
     "widgets": [
         "Modules\\Ibanners\\Widgets\\BannersWidget",
-        "Modules\\Ibanners\\Widgets\\CategoriesWidget",
         "Modules\\Ibanners\\Widgets\\LatestBannersWidget"
     ],
     "aliases":{},
