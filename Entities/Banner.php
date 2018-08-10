@@ -45,7 +45,7 @@ class Banner extends Model
         if(!empty($options->mainimage)) $options->mainimage = $this->saveImage($options->mainimage,"assets/ibanners/banner/".str_random().".jpg");
 
 
-        saveFileInOptions($options,'mediafile',"assets/ibanners/banner/mediafile/");
+        $this->saveFileInOptions($options,'mediafile',"assets/ibanners/banner/mediafile/");
 
         $this->attributes['options'] = json_encode(json_encode($options));
 
