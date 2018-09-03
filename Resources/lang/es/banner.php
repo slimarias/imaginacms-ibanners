@@ -26,7 +26,8 @@ return [
         'code' => 'Codigo Ads',
         'categores' => 'Categorias',
         'status' => 'Estado',
-        'image' => 'Imagen'
+        'image' => 'Imagen',
+        'Media File'=>'Archivos de Media (mp4, gif, png, svg)'
     ],
     'status'=>[
         'draft' => 'Borrador',

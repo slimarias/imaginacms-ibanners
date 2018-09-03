@@ -13,16 +13,21 @@ return [
     'button' => [
         'create banner' => 'Create a banner',
     ],
+    'category'=>'Category',
+    'title' => 'Title',
+
     'table' => [
         'title' => 'Title',
-        'create'=>'Create'
+        'create'=>'Create',
+        'category'=>'Category',
     ],
     'form' => [
         'title' => 'Title',
         'code' => 'Code Ads',
         'categories' => 'Categories',
         'status' => 'Status',
-        'image' => 'Image'
+        'image' => 'Image',
+        'Media File'=>'Media File (mp4, gif, png, svg)'
     ],
     'status'=>[
         'draft' => 'Draft',

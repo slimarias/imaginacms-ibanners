@@ -21,7 +21,7 @@ return [
     'form' => [
         'title' => 'Title',
         'slug' => 'Slug',
-        'parent' => 'Pagre',
+        'parent' => 'Padre',
         'description' => 'Descripciòn'
     ],
     'messages' => [
