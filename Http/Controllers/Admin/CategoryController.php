@@ -55,8 +55,8 @@ class CategoryController extends BcrudController
 
 
         $this->crud->addColumn([
-            'name' => trans('ibanners::category.table.category'),
-            'label' => 'Title',
+            'name' =>  'title',
+            'label' =>trans('ibanners::category.table.title'),
         ]);
 
         $this->crud->addColumn([
@@ -97,7 +97,8 @@ class CategoryController extends BcrudController
             'entity' => 'parent',
             'attribute' => 'title',
             'model' => 'Modules\Ibanners\Entities\Category',
-            'viewposition' => 'right'
+            'viewposition' => 'right',
+            'emptyvalue'=>0
         ]);
 
 

@@ -41,6 +41,7 @@ if (!function_exists('get_banners')) {
                 'status' => Status::PUBLISHED
             );
             $options = array_merge($default_options, $options);
+            is_array($options['categories']) ? true : $options['categories'] = [$options['categories']];
             $banners = Banner::with(['categories']);
             if (!empty($options['categories']) || isset($options['exclude_categories'])) {
 
@@ -55,7 +56,6 @@ if (!function_exists('get_banners')) {
                 ->skip($options['skip'])
                 ->take($options['take'])
                 ->orderBy('created_at', $options['order']);
-
             $view = View::make($templates)
                 ->with([
                     'ibanners' => $banners,
