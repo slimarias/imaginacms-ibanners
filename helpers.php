@@ -58,7 +58,7 @@ if (!function_exists('get_banners')) {
                 ->orderBy('created_at', $options['order']);
             $view = View::make($templates)
                 ->with([
-                    'ibanners' => $banners,
+                    'ibanners' => $banners->get(),
                     'id_cat' => implode($options['categories']),
                     'options' => $options,
                 ]);
