@@ -7,6 +7,5 @@ $router->group(['prefix' =>'/ibanners'], function (Router $router) {
 
     \CRUD::resource('ibanners','category', 'CategoryController');
     \CRUD::resource('ibanners','banner', 'BannerController');
-    \CRUD::resource('ibanners','tag', 'TagController');
 });
 
