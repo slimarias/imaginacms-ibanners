@@ -1,13 +1,15 @@
-<?php
+<?php namespace Modules\Ibanners\Repositories\Cache;
 
-namespace Modules\Ibanners\Repositories\Cache;
-
-use Modules\Ibanners\Repositories\Collection;
-use Modules\Ibanners\Repositories\BannerRepository;
 use Modules\Core\Repositories\Cache\BaseCacheDecorator;
+use Modules\Ibanners\Repositories\BannerRepository;
 
 class CacheBannerDecorator extends BaseCacheDecorator implements BannerRepository
 {
+    /**
+     * @var SlideRepository
+     */
+    protected $repository;
+
     public function __construct(BannerRepository $banner)
     {
         parent::__construct();
@@ -15,51 +17,40 @@ class CacheBannerDecorator extends BaseCacheDecorator implements BannerRepositor
         $this->repository = $banner;
     }
 
+
     /**
-     * Return the latest x ibanners banners
-     * @param int $amount
-     * @return Collection
+     * Get all the read notifications for the given filters
+     * @param array $params
+     * @return \Illuminate\Database\Eloquent\Collection
      */
-    public function latest($amount = 5)
+    public function getItemsBy($params)
     {
         return $this->cache
-            ->remember("{$this->locale}.{$this->entityName}.latest.{$amount}", $this->cacheTime,
-                function () use ($amount) {
-                    return $this->repository->latest($amount);
+            ->tags([$this->entityName, 'global'])
+            ->remember(
+                "{$this->locale}.{$this->entityName}.getItemBy",
+                $this->cacheTime,
+                function () use ($params) {
+                    return $this->repository->getItemsBy($params);
                 }
             );
     }
 
     /**
-     * Get the previous banner of the given banner
-     * @param object $banner
-     * @return object
+     * Get the read notification for the given filters
+     * @param string $criteria
+     * @param array $params
+     * @return \Illuminate\Database\Eloquent\Collection
      */
-    public function getPreviousOf($banner)
+    public function getItem($criteria, $params)
     {
-        $bannerId = $banner->id;
-
         return $this->cache
-            ->remember("{$this->locale}.{$this->entityName}.getPreviousOf.{$bannerId}", $this->cacheTime,
-                function () use ($banner) {
-                    return $this->repository->getPreviousOf($banner);
-                }
-            );
-    }
-
-    /**
-     * Get the next banner of the given banner
-     * @param object $banner
-     * @return object
-     */
-    public function getNextOf($banner)
-    {
-        $bannerId = $banner->id;
-
-        return $this->cache
-            ->remember("{$this->locale}.{$this->entityName}.getNextOf.{$bannerId}", $this->cacheTime,
-                function () use ($banner) {
-                    return $this->repository->getNextOf($banner);
+            ->tags([$this->entityName, 'global'])
+            ->remember(
+                "{$this->locale}.{$this->entityName}.getItem",
+                $this->cacheTime,
+                function () use ($criteria, $params) {
+                    return $this->repository->getItem($criteria, $params);
                 }
             );
     }

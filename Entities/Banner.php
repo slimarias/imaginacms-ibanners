@@ -1,115 +1,89 @@
-<?php
+<?php namespace Modules\Ibanners\Entities;
 
-namespace Modules\Ibanners\Entities;
-
+use Dimsav\Translatable\Translatable;
 use Illuminate\Database\Eloquent\Model;
-use Modules\Bcrud\Support\Traits\CrudTrait;
-use Modules\Ibanners\Entities\Feature;
-use Laracasts\Presenter\PresentableTrait;
-use Modules\Ibanners\Presenters\BannerPresenter;
+use Modules\Media\Support\Traits\MediaRelation;
+use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Facades\App;
+use Modules\Page\Entities\Page;
 
 class Banner extends Model
 {
-    use CrudTrait,  PresentableTrait;
+    use Translatable, MediaRelation;
 
+    public $translatedAttributes = [
+        'title',
+        'code_ads',
+        'uri',
+        'url',
+        'active',
+        'custom_html',
+    ];
+
+    protected $fillable = [
+        'position_id',
+        'order',
+        'target',
+        'title',
+        'code_ads',
+        'uri',
+        'url',
+        'type',
+        'active',
+        'external_image_url',
+        'custom_html',
+    ];
     protected $table = 'ibanners__banners';
 
-    protected $fillable = ['title','code','url','status','options'];
-    protected $presenter = BannerPresenter::class;
-    protected $fakeColumns = ['options'];
+    /**
+     * @var string
+     */
+    private $linkUrl;
+
+    /**
+     * @var string
+     */
+    private $imageUrl;
+
+    public function Position()
+    {
+        return $this->belongsTo(Position::class);
+    }
+
 
 
     /**
-     * The attributes that should be casted to native types.
-     *
-     * @var array
-    */
-
-
-
-
-    protected $casts = [
-        'options' => 'array'
-    ];
-
-    public function categories()
+     * returns slider image src
+     * @return string|null full image path if image exists or null if no image is set
+     */
+    public function getImageUrl()
     {
-        return $this->belongsToMany(Category::class, 'ibanners__banner__category');
-    }
-
-
-    public function setOptionsAttribute($value) {
-
-        $options = json_decode($value);
-        //var_dump($value); die();
-        if(!empty($options->mainimage)) $options->mainimage = $this->saveImage($options->mainimage,"assets/ibanners/banner/".str_random().".jpg");
-
-
-        $this->saveFileInOptions($options,'mediafile',"assets/ibanners/banner/mediafile/");
-
-        $this->attributes['options'] = json_encode(json_encode($options));
-
-    }
-
-    public function getOptionsAttribute($value) {
-
-        return json_decode(json_decode($value));
-
-    }
-
-    public function saveFileInOptions(&$options,$attribute,$dest_path) {
-
-        if(property_exists($options,$attribute)) {
-            //Simulate a real column so we can use tha function uploadFileToDisk
-            $this->attributes[$attribute] = $this->options->{$attribute};
-            $this->uploadFileToDisk($options->{$attribute}, $attribute, "publicmedia", $dest_path);
-
-            $options->{$attribute} = $this->attributes[$attribute];
-
-            unset($this->attributes[$attribute]);
-
-        } else {
-            $options->{$attribute} = (!empty($this->options->{$attribute}))? $this->options->{$attribute} : '';
+        if($this->imageUrl === null) {
+            if (!empty($this->external_image_url)) {
+                $this->imageUrl = $this->external_image_url;
+            } elseif (isset($this->files[0]) && !empty($this->files[0]->path)) {
+                $this->imageUrl = $this->filesByZone('bannerImage')->first()->path_string;
+            }
         }
 
+        return $this->imageUrl;
     }
 
 
-
-    public function saveImage($value,$destination_path)
+    /**
+     * returns slider link URL
+     * @return string|null
+     */
+    public function getLinkUrl()
     {
-
-        $disk = "publicmedia";
-
-        //Defined return.
-        if(ends_with($value,'.jpg')) {
-            return $value;
+        if ($this->linkUrl === null) {
+            if (!empty($this->url)) {
+                $this->linkUrl = $this->url;
+            } elseif (!empty($this->uri)) {
+                $this->linkUrl = '/' . locale() . '/' . $this->uri;
+            }
         }
 
-        // if a base64 was sent, store it in the db
-        if (starts_with($value, 'data:image'))
-        {
-            // 0. Make the image
-            $image = \Image::make($value);
-            // 2. Store the image on disk.
-            \Storage::disk($disk)->put($destination_path, $image->stream());
-
-            // 3. Save the path to the database
-
-            return $destination_path;
-        }
-
-        // if the image was erased
-        if ($value==null) {
-            // delete the image from disk
-            \Storage::disk($disk)->delete($destination_path);
-
-            // set null in the database column
-            return null;
-        }
-
-
+        return $this->linkUrl;
     }
-
-
 }

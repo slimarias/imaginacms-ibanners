@@ -1,29 +1,21 @@
-<?php
-
-namespace Modules\Ibanners\Repositories;
+<?php namespace Modules\Ibanners\Repositories;
 
 use Modules\Core\Repositories\BaseRepository;
 
 interface BannerRepository extends BaseRepository
 {
     /**
-     * Return the latest x ibanners banners
-     * @param int $amount
-     * @return Collection
+     * Get all the read notifications for the given filters
+     * @param array $params
+     * @return \Illuminate\Database\Eloquent\Collection
      */
-    public function latest($amount = 5);
+    public function getItemsBy($params);
 
     /**
-     * Get the previous banner of the given banner
-     * @param object $banner
-     * @return object
+     * Get the read notification for the given filters
+     * @param string $criteria
+     * @param array $params
+     * @return \Illuminate\Database\Eloquent\Collection
      */
-    public function getPreviousOf($banner);
-
-    /**
-     * Get the next banner of the given banner
-     * @param object $banner
-     * @return object
-     */
-    public function getNextOf($banner);
+    public function getItem($criteria, $params);
 }

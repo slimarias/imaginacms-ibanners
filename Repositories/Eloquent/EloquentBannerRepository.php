@@ -1,125 +1,128 @@
-<?php
+<?php namespace Modules\Ibanners\Repositories\Eloquent;
 
-namespace Modules\Ibanners\Repositories\Eloquent;
-
-use Illuminate\Database\Eloquent\Builder;
-use Modules\Ibanners\Entities\Banner;
-use Modules\Ibanners\Entities\Status;
-use Modules\Ibanners\Repositories\Collection;
-use Modules\Ibanners\Repositories\BannerRepository;
 use Modules\Core\Repositories\Eloquent\EloquentBaseRepository;
-use Laracasts\Presenter\PresentableTrait;
+use Modules\Ibanners\Events\BannerWasCreated;
+use Modules\Ibanners\Events\BannerWasDeleted;
+use Modules\Ibanners\Events\BannerWasUpdated;
+use Modules\Ibanners\Repositories\BannerRepository;
+
 
 class EloquentBannerRepository extends EloquentBaseRepository implements BannerRepository
 {
-    /**
-     * @param  int $id
-     * @return object
-     */
-    public function find($id)
-    {
-        return $this->model->find($id);
-    }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Collection
-     */
-    public function all()
-    {
-        return $this->model->orderBy('created_at', 'DESC')->get();
-    }
-
-    /**
-     * Update a resource
-     * @param $banner
-     * @param  array $data
-     * @return mixed
-     */
-    public function update($banner, $data)
-    {
-        $banner->update($data);
-
-
-
-        //event(new BannerWasUpdated($banner, $data));
-
-        return $banner;
-    }
-
-    /**
-     * Create a ibanners banner
-     * @param  array $data
-     * @return Banner
+     * Override for add the event on create and link media file
+     *
+     * @param mixed $data Data from POST request form
+     *
+     * @return object The created entity
      */
     public function create($data)
     {
-        $banner = $this->model->create($data);
-
-
+        $banner = parent::create($data);
 
         event(new BannerWasCreated($banner, $data));
 
         return $banner;
     }
 
+    public function update($banner, $data)
+    {
+        $banner->update($data);
+        event(new BannerWasUpdated($banner,$data));
+        return $banner;
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function destroy($model)
     {
-        //event(new BannerWasDeleted($model->id, get_class($model)));
-
+        event(new BannerWasDeleted($model->id, get_class($model)));
         return $model->delete();
     }
 
+    public function getItemsBy($params = false)
+      {
+        /*== initialize query ==*/
+        $query = $this->model->query();
 
-    /**
-     * Return the latest x ibanners banners
-     * @param int $amount
-     * @return Collection
-     */
-    public function latest($amount = 5)
-    {
-        return $this->model->whereStatus(Status::PUBLISHED)->orderBy('created_at', 'desc')->take($amount)->get();
-    }
+        /*== RELATIONSHIPS ==*/
+        if(in_array('*',$params->include)){//If Request all relationships
+          $query->with([]);
+        }else{//Especific relationships
+          $includeDefault = [];//Default relationships
+          if (isset($params->include))//merge relations with default relationships
+            $includeDefault = array_merge($includeDefault, $params->include);
+          $query->with($includeDefault);//Add Relationships to query
+        }
 
-    /**
-     * Get the previous banner of the given banner
-     * @param object $banner
-     * @return object
-     */
-    public function getPreviousOf($banner)
-    {
-        return $this->model->where('created_at', '<', $banner->created_at)
-            ->whereStatus(Status::PUBLISHED)->orderBy('created_at', 'desc')->first();
-    }
+        /*== FILTERS ==*/
+        if (isset($params->filter)) {
+          $filter = $params->filter;//Short filter
+            if (isset($filter->position)) {
+                $query->where('position_id', $filter->position);
+            }
+          //Filter by date
+          if (isset($filter->date)) {
+            $date = $filter->date;//Short filter date
+            $date->field = $date->field ?? 'created_at';
+            if (isset($date->from))//From a date
+              $query->whereDate($date->field, '>=', $date->from);
+            if (isset($date->to))//to a date
+              $query->whereDate($date->field, '<=', $date->to);
+          }
 
-    /**
-     * Get the next banner of the given banner
-     * @param object $banner
-     * @return object
-     */
-    public function getNextOf($banner)
-    {
-        return $this->model->where('created_at', '>', $banner->created_at)
-            ->whereStatus(Status::PUBLISHED)->first();
-    }
+          //Order by
+          if (isset($filter->order)) {
+            $orderByField = $filter->order->field ?? 'created_at';//Default field
+            $orderWay = $filter->order->way ?? 'desc';//Default way
+            $query->orderBy($orderByField, $orderWay);//Add order to query
+          }
+        }
 
-    /**
-     * Find a resource by the given slug
-     *
-     * @param  string $slug
-     * @return object
-     */
-    public function findBySlug($slug)
-    {
+        /*== FIELDS ==*/
+        if (isset($params->fields) && count($params->fields))
+          $query->select($params->fields);
 
-        return $this->model->where('url', $slug)->whereStatus(Status::PUBLISHED)->firstOrFail();
-    }
+        /*== REQUEST ==*/
+        if (isset($params->page) && $params->page) {
+          return $query->paginate($params->take);
+        } else {
+          $params->take ? $query->take($params->take) : false;//Take
+          return $query->get();
+        }
+      }
 
-    public function whereCategory($id)
-    {
+   public function getItem($criteria, $params = false)
+       {
+         //Initialize query
+         $query = $this->model->query();
+   
+       /*== RELATIONSHIPS ==*/
+       if(in_array('*',$params->include)){//If Request all relationships
+         $query->with([]);
+       }else{//Especific relationships
+         $includeDefault = [];//Default relationships
+         if (isset($params->include))//merge relations with default relationships
+           $includeDefault = array_merge($includeDefault, $params->include);
+         $query->with($includeDefault);//Add Relationships to query
+       }
+   
+         /*== FILTER ==*/
+         if (isset($params->filter)) {
+           $filter = $params->filter;
+   
+           if (isset($filter->field))//Filter by specific field
+             $field = $filter->field;
+         }
+   
+         /*== FIELDS ==*/
+         if (isset($params->fields) && count($params->fields))
+           $query->select($params->fields);
+   
+         /*== REQUEST ==*/
+         return $query->where($field ?? 'id', $criteria)->first();
+       }
 
-        return $this->model->whereHas('categories', function ($query) use ($id) {
-            $query->where('category_id', $id);
-        })->orderBy('created_at', 'DESC')->paginate(12);
-
-    }
 }

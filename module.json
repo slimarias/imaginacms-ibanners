@@ -3,19 +3,16 @@
     "alias": "ibanners",
     "description": "A banner module with categories",
     "keywords": [],
-    "version": "3.0.8",
+    "version": "4.0.0",
     "active": 1,
     "order": 1,
     "providers": [
         "Modules\\Ibanners\\Providers\\IbannersServiceProvider",
         "Modules\\Ibanners\\Providers\\RouteServiceProvider"
     ],
-    "widgets": [
-        "Modules\\Ibanners\\Widgets\\BannersWidget",
-        "Modules\\Ibanners\\Widgets\\LatestBannersWidget"
-    ],
-    "aliases":{},
-    "files": [
-        "helpers.php"
-    ]
+    "widgets": [],
+    "aliases": {
+        "BannerAds": "Modules\\Ibanners\\Facades\\PositionFacade"
+    },
+    "files": []
 }

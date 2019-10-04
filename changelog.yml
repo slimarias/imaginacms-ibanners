@@ -1,0 +1,10 @@
+url: https://github.com/becquerel/asgard-slider-module
+versions:
+    "4.0.0":
+      added:
+        - version 4.0.0
+    "3.0.0":
+        changed:
+            - Initial prototype
+            - Based on great work of Nicolas Widart on the Menu module
+            - Supports Bootstrap carousel with hardcoded defaults

@@ -1,6 +1,4 @@
-<?php
-
-namespace Modules\Ibanners\Providers;
+<?php namespace Modules\Ibanners\Providers;
 
 use Modules\Core\Providers\RoutingServiceProvider as CoreRoutingServiceProvider;
 
@@ -17,9 +15,8 @@ class RouteServiceProvider extends CoreRoutingServiceProvider
      */
     protected function getFrontendRoute()
     {
-        return __DIR__ . '/../Http/frontendRoutes.php';
+        return false;
     }
-
 
     /**
      * @return string
@@ -34,6 +31,6 @@ class RouteServiceProvider extends CoreRoutingServiceProvider
      */
     protected function getApiRoute()
     {
-        return false;
+        return __DIR__ . '/../Http/apiRoutes.php';
     }
 }
