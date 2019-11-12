@@ -3,7 +3,7 @@
 use Illuminate\Routing\Router;
 
 $router->group(['prefix' => '/positions'], function (Router $router) {
- 
+
   $router->post('/', [
     'as' => 'api.ibanners.positions.create',
     'uses' => 'PositionApiController@create',
@@ -27,5 +27,11 @@ $router->group(['prefix' => '/positions'], function (Router $router) {
     'as' => 'api.ibanners.positions.show',
     'uses' => 'PositionApiController@show',
   ]);
-  
+
+  $router->post('/order-banners', [
+    'as' => 'api.ibanners.positions.banner.update',
+    'uses' => 'BannerController@update',
+    'middleware' => ['auth:api']
+  ]);
+
 });

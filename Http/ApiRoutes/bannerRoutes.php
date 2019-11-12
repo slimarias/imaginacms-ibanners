@@ -3,29 +3,29 @@
 use Illuminate\Routing\Router;
 
 $router->group(['prefix' => '/banners'], function (Router $router) {
-  
+
   $router->post('/', [
     'as' =>  'api.ibanners.banners.create',
-    'uses' => 'SlideApiController@create',
+    'uses' => 'BannerApiController@create',
     'middleware' => ['auth:api']
   ]);
   $router->get('/', [
     'as' =>  'api.ibanners.banners.index',
-    'uses' => 'SlideApiController@index',
+    'uses' => 'BannerApiController@index',
   ]);
   $router->put('/{criteria}', [
     'as' =>  'api.ibanners.banners.update',
-    'uses' => 'SlideApiController@update',
+    'uses' => 'BannerApiController@update',
     'middleware' => ['auth:api']
   ]);
   $router->delete('/{criteria}', [
     'as' =>  'api.ibanners.banners.delete',
-    'uses' => 'SlideApiController@delete',
+    'uses' => 'BannerApiController@delete',
     'middleware' => ['auth:api']
   ]);
   $router->get('/{criteria}', [
     'as' =>  'api.ibanners.banners.show',
-    'uses' => 'SlideApiController@show',
+    'uses' => 'BannerApiController@show',
   ]);
-  
+
 });
