@@ -6,11 +6,12 @@ use Illuminate\Contracts\Cache\Repository;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Response;
-use Modules\Ibanners\Repositories\Eloquent\EloquentPositionApiRepository;
-use Modules\Ibanners\Repositories\PositionApiRepository;
-use Modules\Ibanners\Services\SlideOrderer;
+use Modules\Ibanners\Repositories\Eloquent\EloquentPositionRepository;
+use Modules\Ibanners\Repositories\PositionRepository;
+use Modules\Ibanners\Services\BannerOrderer;
 use Modules\Ibanners\Transformers\PositionApiTransformer;
 use Modules\Ihelpers\Http\Controllers\Api\BaseApiController;
+use Modules\Ibanners\Http\Requests\UpdatePositionRequest;
 
 class PositionApiController extends BaseApiController
 {
@@ -19,15 +20,15 @@ class PositionApiController extends BaseApiController
      */
     private $cache;
     /**
-     * @var SlideOrderer
+     * @var BannerOrderer
      */
     private $bannerOrderer;
     /**
-     * @var EloquentPositionApiRepository
+     * @var EloquentPositionRepository
      */
     private $position;
 
-    public function __construct(PositionApiRepository $position, SlideOrderer $bannerOrderer)
+    public function __construct(PositionRepository $position, BannerOrderer $bannerOrderer)
     {
         $this->position = $position;
         $this->bannerOrderer = $bannerOrderer;
@@ -67,28 +68,25 @@ class PositionApiController extends BaseApiController
     /**
      * Show banner by id
      */
-    public function show($id, Request $request)
+    public function show($criteria, Request $request)
     {
-        try {
-            //Request to Repository
-
-            $params = $this->getParamsRequest($request, []);
-            $position = $this->position->show($id, $params->include);
-
-            //Response
-            $response = [
-                "data" => is_null($position) ?
-                    false : new PositionApiTransformer($position)
-            ];
-        } catch (\Exception $e) {
-            //Message Error
-            $status = 500;
-            $response = [
-                "errors" => $e->getMessage()
-            ];
-        }
-
-        return response()->json($response, $status ?? 200);
+      try {
+        //Get Parameters from URL.
+        $params = $this->getParamsRequest($request);
+        //Request to Repository
+        $position = $this->position->getItem($criteria, $params);
+        //Break if no found item
+        if (!$position) throw new Exception('Item not found', 204);
+        //Response
+        $response = ["data" => new PositionApiTransformer($position)];
+        //If request pagination add meta-page
+        $params->page ? $response["meta"] = ["page" => $this->pageTransformer($position)] : false;
+      } catch (\Exception $e) {
+        $status = $this->getStatusError($e->getCode());
+        $response = ["errors" => $e->getMessage()];
+      }
+      //Return response
+      return response()->json($response ?? ["data" => "Request successful"], $status ?? 200);
     }
 
     /**
@@ -137,7 +135,7 @@ class PositionApiController extends BaseApiController
             $data = $request->input('attributes');
 
             //Validate Request
-            $this->validateRequestApi(new UpdatePositionRequest((array)$data));
+            //$this->validateRequestApi(new UpdatePositionRequest((array)$data));
 
             //Get Parameters from URL.
             $params = $this->getParamsRequest($request);
@@ -175,27 +173,21 @@ class PositionApiController extends BaseApiController
      */
     public function delete($criteria, Request $request)
     {
-        \DB::beginTransaction();
-        try {
-            //Get params
-            $params = $this->getParamsRequest($request);
-
-            $dataEntity = $this->position->getItem($criteria, $params);
-
-            if (!$dataEntity) throw new Exception('Item not found', 204);
-            $this->position->delete($dataEntity);
-
-            //Response
-            $response = ["data" => ""];
-            \DB::commit();//Commit to Data Base
-        } catch (\Exception $e) {
-            \DB::rollback();//Rollback to Data Base
-            $status = $this->getStatusError($e->getCode());
-            $response = ["errors" => $e->getMessage()];
-        }
-
-        //Return response
-        return response()->json($response, $status ?? 200);
+      \DB::beginTransaction();
+      try {
+        //Get params
+        $params = $this->getParamsRequest($request);
+        //Delete data
+        $this->position->deleteBy($criteria, $params);
+        //Response
+        $response = ['data' => ''];
+        \DB::commit(); //Commit to Data Base
+      } catch (\Exception $e) {
+        \DB::rollback();//Rollback to Data Base
+        $status = $this->getStatusError($e->getCode());
+        $response = ["errors" => $e->getMessage()];
+      }
+      return response()->json($response, $status ?? 200);
     }
 
 }
