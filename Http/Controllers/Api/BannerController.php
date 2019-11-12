@@ -37,9 +37,21 @@ class BannerController extends Controller
      */
     public function update(Request $request)
     {
-        $this->cache->tags('banners')->flush();
 
-        $this->bannerOrderer->handle($request->get('position'));
+      try {
+        $this->cache->tags('banners')->flush();
+        if ($request->input('attributes')){
+          $data = $request->input('attributes');
+          $this->bannerOrderer->handle(json_encode($data['position']));
+        } else {
+          $this->bannerOrderer->handle($request->get('position'));
+        }
+        $response = ["data" => "Order Updated"];
+      } catch (\Exception $e) {
+        $status = 500;
+        $response = ["errors" => $e->getMessage()];
+      }
+      return response()->json($response, $status ?? 200);
     }
 
     /**
