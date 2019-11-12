@@ -58,9 +58,9 @@ class EloquentPositionRepository extends EloquentBaseRepository implements Posit
 
         /*== RELATIONSHIPS ==*/
         if (in_array('*', $params->include)) {//If Request all relationships
-            $query->with(['translations','position']);
+            $query->with(['position']);
         } else {//Especific relationships
-            $includeDefault = ['translations'];//Default relationships
+            $includeDefault = [];//Default relationships
             if (isset($params->include))//merge relations with default relationships
                 $includeDefault = array_merge($includeDefault, $params->include);
             $query->with($includeDefault);//Add Relationships to query
@@ -134,6 +134,21 @@ class EloquentPositionRepository extends EloquentBaseRepository implements Posit
 
         /*== REQUEST ==*/
         return $query->where($field ?? 'id', $criteria)->first();
+    }
+
+    public function deleteBy($criteria, $params = false)
+    {
+      /*== initialize query ==*/
+      $query = $this->model->query();
+      /*== FILTER ==*/
+      if (isset($params->filter)) {
+        $filter = $params->filter;
+        if (isset($filter->field))//Where field
+          $field = $filter->field;
+      }
+      /*== REQUEST ==*/
+      $model = $query->where($field ?? 'id', $criteria)->first();
+      $model ? $model->delete() : false;
     }
 
 }
