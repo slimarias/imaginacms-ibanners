@@ -4,8 +4,8 @@ namespace Modules\Ibanners\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
 use Modules\Ibanners\Http\Requests\CreateBannerRequest;
-use Modules\Ibanners\Repositories\BannerApiRepository;
-use Modules\Ibanners\Transformers\BannerApiTransformer;
+use Modules\Ibanners\Repositories\BannerRepository;
+use Modules\Ibanners\Transformers\BannerApiTransformer as EntityTranformer;
 use Modules\Ihelpers\Http\Controllers\Api\BaseApiController;
 
 class BannerApiController extends BaseApiController
@@ -13,7 +13,7 @@ class BannerApiController extends BaseApiController
 
     private $banner;
 
-    public function __construct(BannerApiRepository $banner)
+    public function __construct(BannerRepository $banner)
     {
         $this->banner = $banner;
     }
@@ -163,28 +163,21 @@ class BannerApiController extends BaseApiController
      */
     public function delete($criteria, Request $request)
     {
-        \DB::beginTransaction();
-        try {
-            //Get params
-            $params = $this->getParamsRequest($request);
-
-            $dataEntity = $this->banner->getItem($criteria, $params);
-
-            if (!$dataEntity) throw new Exception('Item not found', 204);
-            $this->banner->delete($dataEntity);
-
-
-            //Response
-            $response = ["data" => ""];
-            \DB::commit();//Commit to Data Base
-        } catch (\Exception $e) {
-            \DB::rollback();//Rollback to Data Base
-            $status = $this->getStatusError($e->getCode());
-            $response = ["errors" => $e->getMessage()];
-        }
-
-        //Return response
-        return response()->json($response, $status ?? 200);
+      \DB::beginTransaction();
+      try {
+        //Get params
+        $params = $this->getParamsRequest($request);
+        //Delete data
+        $this->banner->deleteBy($criteria, $params);
+        //Response
+        $response = ['data' => ''];
+        \DB::commit(); //Commit to Data Base
+      } catch (\Exception $e) {
+        \DB::rollback();//Rollback to Data Base
+        $status = $this->getStatusError($e->getCode());
+        $response = ["errors" => $e->getMessage()];
+      }
+      return response()->json($response, $status ?? 200);
     }
 
 
