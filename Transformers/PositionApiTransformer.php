@@ -13,7 +13,7 @@ class PositionApiTransformer extends Resource
       'id' => $this->id,
       'name' => $this->name,
       'systemName' => $this->system_name,
-      'active' => $this->active == 1 ? true : false,
+      'active' => $this->active,
       'options' => $this->when($this->options, $this->options),
       'createdAt' => $this->created_at,
       'banners' => BannerApiTransformer::collection($this->Banners),
