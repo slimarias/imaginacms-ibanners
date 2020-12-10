@@ -43,7 +43,7 @@ class BannerApiTransformer extends JsonResource
         $data[$lang]['url'] = $this->hasTranslation($lang) ?
           $this->translate("$lang")['url'] : '';
         $data[$lang]['active'] = $this->hasTranslation($lang) ?
-          $this->translate("$lang")['active'] == 1 ? true : false : '';
+          $this->translate("$lang")['active'] : 0;
         $data[$lang]['customHtml'] = $this->hasTranslation($lang) ?
           $this->translate("$lang")['customHtml'] ? $this->translate("$lang")['customHtml'] : '' : '';
       }
