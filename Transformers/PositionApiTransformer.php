@@ -13,7 +13,7 @@ class PositionApiTransformer extends JsonResource
       'id' => $this->id,
       'name' => $this->when($this->name, $this->name),
       'systemName' => $this->when($this->system_name, $this->system_name),
-      'active' => $this->active == 1 ? true : false,
+      'active' => $this->active == 1 ? 1 : 0,
       'options' => $this->when($this->options, $this->options),
       'createdAt' => $this->created_at,
       'showAsPopup' => $this->show_as_popup == 1 ? true : false,
